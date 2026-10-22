@@ -1,0 +1,1 @@
+@extends('layout') @section('content')<h1>Panel institucional</h1><p>Bienvenido, {{ auth()->user()->name }}.</p><p>Fase 1: estructura institucional, responsables, catálogos e inventario base.</p><p>Asignaciones, movimientos y documentos oficiales se incorporarán en fases posteriores.</p>@endsection
