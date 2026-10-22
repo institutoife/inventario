@@ -4,12 +4,21 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $panel->getId() === 'admin' && $this->active && $this->roles()->whereHas('permissions', fn ($query) => $query->whereIn('code', [
+            'assets.view', 'users.manage', 'structure.manage', 'people.manage', 'catalogs.manage', 'audit.view',
+        ]))->exists();
+    }
+
     protected $attributes = ['active' => true];
 
     public function roles()
@@ -56,6 +65,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'active' => 'boolean',
             'password' => 'hashed',
         ];
     }

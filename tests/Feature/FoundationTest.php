@@ -38,7 +38,7 @@ class FoundationTest extends TestCase
 
     public function test_authentication_and_permissions(): void
     {
-        $this->get('/')->assertRedirect('/login');
+        $this->get('/dashboard')->assertRedirect('/login');
         $u = $this->user('auditor');
         $this->actingAs($u)->get('/audit')->assertOk();
         $this->get('/admin/users')->assertForbidden();
@@ -63,6 +63,7 @@ class FoundationTest extends TestCase
         }
         $this->get('/roles')->assertOk();
         $this->get('/')->assertOk();
+        $this->get('/dashboard')->assertOk();
         $this->get('/login')->assertRedirect();
     }
 
@@ -104,15 +105,15 @@ class FoundationTest extends TestCase
     {
         $u = $this->user();
         $this->post('/login', ['email' => $u->email, 'password' => 'wrong'])->assertSessionHasErrors('email');
-        $this->post('/login', ['email' => $u->email, 'password' => 'password'])->assertRedirect('/');
-        $this->post('/logout')->assertRedirect('/login');
+        $this->post('/login', ['email' => $u->email, 'password' => 'password'])->assertRedirect('/panel');
+        $this->post('/logout')->assertRedirect('/');
         $this->assertGuest();
         $this->actingAs($u)->post('/admin/users', ['name' => 'Usuario', 'email' => 'new@example.test', 'password' => 'StrongPassword123', 'active' => 1, 'roles' => [Role::where('code', 'auditor')->value('id')], 'reason' => 'Crear usuario'])->assertRedirect();
         $log = AuditLog::where('action', 'create')->where('entity_type', 'users')->first();
         $this->assertArrayNotHasKey('password', $log->new_values);
         $u->active = false;
         $u->save();
-        $this->get('/')->assertRedirect('/login');
+        $this->get('/dashboard')->assertRedirect('/login');
     }
 
     public function test_audit_is_immutable_through_model(): void
@@ -125,7 +126,7 @@ class FoundationTest extends TestCase
     public function test_seed_is_idempotent(): void
     {
         $this->seed(FoundationSeeder::class);
-        $this->assertDatabaseCount('roles',6);
-        $this->assertDatabaseCount('physical_statuses',4);
+        $this->assertDatabaseCount('roles', 6);
+        $this->assertDatabaseCount('physical_statuses', 4);
     }
 }

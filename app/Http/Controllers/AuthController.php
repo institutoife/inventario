@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\Audit;
+use App\Models\User;
+use Filament\Facades\Filament;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
@@ -17,24 +18,23 @@ class AuthController extends Controller
         if (RateLimiter::tooManyAttempts($key, 5)) {
             throw ValidationException::withMessages(['email' => 'Demasiados intentos. Espere un minuto.']);
         }
-        if (! Auth::attempt([...$data, 'active' => true])) {
+        if (! Auth::attemptWhen([...$data, 'active' => true], fn (User $user) => $user->canAccessPanel(Filament::getPanel('admin')))) {
             RateLimiter::hit($key, 60);
             throw ValidationException::withMessages(['email' => 'Credenciales inválidas.']);
         }
         RateLimiter::clear($key);
         $request->session()->regenerate();
-        Audit::record('login', 'users', auth()->id());
 
-        return redirect()->intended('/');
+        return redirect()->intended(route('filament.admin.pages.dashboard'));
     }
 
     public function logout(Request $request)
     {
-        Audit::record('logout', 'users', auth()->id());
+
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return redirect()->route('home');
     }
 }

@@ -12,12 +12,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 
+Route::view('/', 'home')->name('home');
+Route::get('/login', fn () => redirect()->route(auth()->check() ? 'filament.admin.pages.dashboard' : 'filament.admin.auth.login'))->name('login');
+
 Route::middleware('guest')->group(function () {
-    Route::view('/login', 'login')->name('login');
     Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:20,1')->name('login.submit');
 });
 Route::middleware(['auth', ActiveUser::class])->group(function () {
-    Route::view('/', 'dashboard')->name('dashboard');
+    Route::view('/dashboard', 'dashboard')->name('dashboard');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/audit', function () {
         Gate::authorize('audit.view');

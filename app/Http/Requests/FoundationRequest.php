@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Domain\Assets\AssetData;
+use App\Models\Asset;
 use App\Models\Location;
 use App\Models\Office;
 use App\Services\AdminResources as Resources;
@@ -22,6 +24,9 @@ class FoundationRequest extends FormRequest
     public function rules(): array
     {
         $key = $this->route('resource');
+        if ($key === 'assets') {
+            return AssetData::rules($this->route('id') ? Asset::findOrFail($this->route('id')) : null);
+        }
         [$model,,,$fields] = Resources::get($key);
         $table = (new $model)->getTable();
         $rules = ['reason' => 'required|string|max:2000', 'version' => 'nullable|integer|min:1'];
@@ -58,6 +63,11 @@ class FoundationRequest extends FormRequest
     {
         return [function ($validator) {
             $key = $this->route('resource');
+            if ($key === 'assets') {
+                AssetData::validateLocation($validator, $this->all());
+
+                return;
+            }
             if ($this->filled('office_id')) {
                 $office = Office::find($this->office_id);
                 if (! $office || (int) $office->organizational_unit_id !== (int) $this->organizational_unit_id) {

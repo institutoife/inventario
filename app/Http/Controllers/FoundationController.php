@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Assets\SaveAsset;
 use App\Http\Requests\FoundationRequest;
-use App\Models\AdministrativeStatus;
 use App\Models\Asset;
 use App\Models\Person;
 use App\Models\Role;
+use App\Queries\AssetVisibility;
 use App\Services\AdminResources as Resources;
 use App\Services\Audit;
 use Illuminate\Support\Arr;
@@ -19,7 +20,8 @@ class FoundationController extends Controller
     {
         [$model,$title,$permission,$fields] = Resources::get($resource);
         Gate::authorize($permission);
-        $rows = $model::orderByDesc('id')->paginate(25);
+        $query = $resource === 'assets' ? AssetVisibility::forUser(auth()->user()) : $model::query();
+        $rows = $query->orderByDesc('id')->paginate(25);
 
         return view('admin.index', compact('resource', 'title', 'fields', 'rows'));
     }
@@ -29,6 +31,9 @@ class FoundationController extends Controller
         [$model,$title,$permission,$fields] = Resources::get($resource);
         Gate::authorize($resource === 'assets' ? ($id ? 'assets.update' : 'assets.create') : $permission);
         $row = $id ? $model::findOrFail($id) : new $model;
+        if ($resource === 'assets') {
+            Gate::authorize($id ? 'update' : 'create', $id ? $row : Asset::class);
+        }
         $options = [];
         foreach ($fields as $field => $label) {
             if ($ref = Resources::reference($resource, $field)) {
@@ -46,6 +51,11 @@ class FoundationController extends Controller
     {
         [$model] = Resources::get($resource);
         $data = $request->validated();
+        if ($resource === 'assets') {
+            app(SaveAsset::class)->execute($request->user(), $data, $id ? Asset::findOrFail($id) : null, $id ? (string) $request->input('record_token') : null);
+
+            return redirect()->route('admin.index', $resource)->with('status', 'Registro guardado.');
+        }
         DB::transaction(function () use ($data, $model, $resource, $id) {
             $row = $id ? $model::lockForUpdate()->findOrFail($id) : new $model;
             if ($id && ! hash_equals(hash('sha256', json_encode($row->getAttributes())), (string) request('record_token'))) {
@@ -64,14 +74,6 @@ class FoundationController extends Controller
             }
             if ($resource === 'users' && $id === auth()->id()) {
                 abort_unless($values['active'] && in_array(Role::where('code', 'superadmin')->value('id'), $data['roles']), 422, 'No puede desactivar o quitar su propio acceso de superadministración.');
-            }
-            if ($resource === 'assets') {
-                if ($id) {
-                    abort_unless((int) $row->version === (int) ($data['version'] ?? 0), 409);
-                } else {
-                    $values['administrative_status_id'] = AdministrativeStatus::where('code', 'available')->sole()->id;
-                }
-                $values['version'] = $id ? $row->version + 1 : 1;
             }
             $row->fill($values)->save();
             if ($resource === 'users') {

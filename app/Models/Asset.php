@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Asset extends Model
 {
@@ -14,6 +15,11 @@ class Asset extends Model
     protected function casts(): array
     {
         return ['active' => 'boolean', 'value' => 'decimal:2', 'registered_on' => 'date'];
+    }
+
+    public function auditLogs(): HasMany
+    {
+        return $this->hasMany(AuditLog::class, 'entity_id')->where('entity_type', 'assets');
     }
 
     public function unit(): BelongsTo
