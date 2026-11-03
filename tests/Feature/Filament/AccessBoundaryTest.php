@@ -15,7 +15,7 @@ class AccessBoundaryTest extends FilamentTestCase
         $role->permissions()->attach(Permission::where('code', 'assets.update')->sole());
         $user = $this->makeUser(null);
         $user->roles()->attach($role);
-        $this->actingAs($user)->get('/admin/assets/'.$asset->id.'/edit')->assertForbidden();
+        $this->actingAs($user)->get('/admin/assets/'.$asset->id.'/edit')->assertNotFound();
         $this->get(AssetResource::getUrl('view', ['record' => $asset]))->assertForbidden();
         $this->assertDatabaseCount('audit_logs', 0);
     }
@@ -28,6 +28,6 @@ class AccessBoundaryTest extends FilamentTestCase
         $user->roles()->attach($role);
         $this->actingAs($user)->get('/panel')->assertOk()->assertSee('Catálogos')->assertDontSee('Activos registrados');
         $this->get(AssetResource::getUrl())->assertForbidden();
-        $this->get('/admin/assets')->assertForbidden();
+        $this->get('/admin/assets')->assertNotFound();
     }
 }

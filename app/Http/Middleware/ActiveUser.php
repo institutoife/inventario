@@ -11,7 +11,7 @@ class ActiveUser
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
-            return redirect()->route('login');
+            return redirect()->route('filament.admin.auth.login');
         }
 
         return $next($request);

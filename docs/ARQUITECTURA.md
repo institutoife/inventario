@@ -56,12 +56,12 @@ Ediciones comparan token SHA-256 del registro leído contra el registro bloquead
 
 ## Operación
 
-Alternativa para el usuario inicial: configurar `INITIAL_ADMIN_NAME`, `INITIAL_ADMIN_EMAIL` y `INITIAL_ADMIN_PASSWORD` (mínimo 12 caracteres) en `.env`, ejecutar `php artisan config:clear` y luego `php artisan db:seed`. DatabaseSeeder ejecuta FoundationSeeder antes de InitialAdminSeeder. No se modifica ni se eleva un usuario cuyo correo ya exista. Sin correo configurado se omite este seeder. Retirar la contraseña inicial de `.env` después de crear la cuenta y limpiar nuevamente la configuración.
+La administraci?n vigente est? exclusivamente en Filament (`/panel`) y la portada p?blica est? en `/`. Consultar [PANEL_FILAMENT.md](PANEL_FILAMENT.md). Las credenciales iniciales se editan directamente en `database/seeders/UserSeeder.php` y se crean con `php artisan db:seed`.
 
 1. Configurar .env con base de datos y APP_KEY. Mantener MySQL actual; .env.example conserva SQLite de desarrollo.
 2. `php artisan migrate --seed` (no usar migrate:fresh con datos).
 3. `php artisan app:create-admin correo@institucion.tld "Nombre completo"`; solicita contraseña de al menos 12 caracteres sin mostrarla. No existen credenciales por defecto.
-4. Servir con raíz en `public`, por ejemplo `php artisan serve`; ingresar a `/login`.
+4. Servir con raíz en `public`, por ejemplo `php artisan serve`; ingresar a `/panel/login`.
 5. Crear unidades, oficinas, ubicaciones, cargos, grados y responsables. Configurar partidas/categorías y dar altas base de activos. Asignación responsable, bajas, depósitos y movimientos quedan para fases posteriores.
 6. `php artisan test`; `php vendor/laravel/pint/builds/pint --test`.
 

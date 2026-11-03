@@ -1,0 +1,28 @@
+/* Verde pacay para el día. El modo noche conserva los fondos nativos de Filament. */
+html:not(.dark) .fi-body {
+    background-color: #f3f6ee;
+}
+html:not(.dark) .fi-sidebar {
+    background-color: #e8efdf;
+    border-inline-end: 1px solid #d5dfc9;
+}
+html:not(.dark) .fi-sidebar-header,
+html:not(.dark) .fi-topbar {
+    background-color: #f8faf5;
+}
+html:not(.dark) .fi-logo {
+    color: #355329;
+}
+html:not(.dark) .fi-sidebar-item.fi-active > .fi-sidebar-item-btn {
+    background-color: #d3e3c4;
+}
+html:not(.dark) .fi-sidebar-item.fi-active .fi-sidebar-item-label,
+html:not(.dark) .fi-sidebar-item.fi-active .fi-sidebar-item-icon {
+    color: #355329;
+}
+html:not(.dark) .fi-sidebar-group-label {
+    color: #526647;
+}
+html:not(.dark) .fi-simple-layout {
+    background-color: #edf3e5;
+}

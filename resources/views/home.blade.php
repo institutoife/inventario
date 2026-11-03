@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Sistema institucional para la gestión y consulta de activos fijos.">
     <title>Activos fijos | Inicio</title>
-    <link rel="stylesheet" href="{{ asset('css/portal.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/portal.css') }}?v={{ filemtime(public_path('css/portal.css')) }}">
 </head>
 <body>
     <a class="skip-link" href="#contenido">Ir al contenido</a>
@@ -25,7 +25,7 @@
                     @if(auth()->user()->canAccessPanel(\Filament\Facades\Filament::getPanel('admin')))
                         <a class="button button-primary" href="{{ route('filament.admin.pages.dashboard') }}">Ir al panel</a>
                     @endif
-                    <form method="post" action="{{ route('logout') }}">
+                    <form method="post" action="{{ route('filament.admin.auth.logout') }}">
                         @csrf
                         <button class="button button-icon" type="submit" title="Cerrar sesión" aria-label="Cerrar sesión">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

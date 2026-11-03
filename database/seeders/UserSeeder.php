@@ -8,35 +8,24 @@ use App\Services\Audit;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 
 class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        $settings = config('initial_admin');
-        $email = $settings['email'] ?? null;
-        if (blank($email)) {
-            if (! app()->isLocal()) {
-                $this->command?->warn('Configure INITIAL_ADMIN_EMAIL y INITIAL_ADMIN_PASSWORD para crear el administrador.');
+        // Edita aquí las credenciales antes de ejecutar php artisan db:seed.
+        $name = 'Administrador'; 
+        $email = 'admin@acho.com';
+        $password = 'CambiarEstaClave2026!';
 
-                return;
-            }
-            $email = 'admin@inventario.local';
-        }
         if (User::where('email', $email)->exists()) {
             $this->command?->info('El usuario '.$email.' ya existe; no se modificaron su contraseña ni sus roles.');
 
             return;
         }
 
-        $password = $settings['password'] ?? null;
-        $generatedPassword = blank($password) && app()->isLocal();
-        if ($generatedPassword) {
-            $password = Str::random(24);
-        }
         $data = Validator::make([
-            'name' => $settings['name'] ?? 'Administrador',
+            'name' => $name,
             'email' => $email,
             'password' => $password,
         ], [
@@ -62,9 +51,7 @@ class UserSeeder extends Seeder
 
         if ($created) {
             $this->command?->info('Administrador creado: '.$data['email']);
-            if ($generatedPassword) {
-                $this->command?->line('Contraseña inicial: '.$data['password']);
-            }
+
         }
     }
 }

@@ -1,3 +1,5 @@
+> Documento hist?rico. La migraci?n completa de la administraci?n a Filament se describe en [PANEL_FILAMENT.md](PANEL_FILAMENT.md).
+
 # Auditoría previa a Filament — 22/10/2026
 
 ## Estado comprobado antes de modificar código

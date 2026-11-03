@@ -76,9 +76,9 @@ class PanelTest extends FilamentTestCase
     public function test_auditor_has_audit_access_but_no_user_management_links(): void
     {
         $this->actingAs($this->makeUser('auditor'));
-        $this->get('/panel')->assertOk()->assertDontSee(route('admin.index', 'users'), false);
+        $this->get('/panel')->assertOk()->assertDontSee(url('/panel/users'), false);
         $this->get(AuditTrail::getUrl())->assertOk();
-        $this->get('/admin/users')->assertForbidden();
+        $this->get('/panel/users')->assertForbidden();
     }
 
     public function test_audit_page_and_widgets_deny_users_without_permission(): void

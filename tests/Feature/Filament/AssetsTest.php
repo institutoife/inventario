@@ -138,7 +138,7 @@ class AssetsTest extends FilamentTestCase
         $otherUnit = OrganizationalUnit::create(['code' => 'U2', 'name' => 'Otra unidad']);
         $office = Office::create(['code' => 'O1', 'name' => 'Oficina', 'organizational_unit_id' => $unit->id]);
         $deposit = Location::create(['code' => 'D1', 'name' => 'Depósito', 'office_id' => $office->id, 'is_deposit' => true]);
-        $this->post('/admin/assets', $this->assetData(['organizational_unit_id' => $otherUnit->id, 'office_id' => $office->id]))->assertSessionHasErrors('office_id');
+        Livewire::test(CreateAsset::class)->fillForm($this->assetData(['organizational_unit_id' => $otherUnit->id, 'office_id' => $office->id]))->call('create')->assertHasFormErrors(['office_id']);
         Livewire::test(CreateAsset::class)->fillForm($this->assetData(['organizational_unit_id' => $unit->id, 'office_id' => $office->id, 'location_id' => $deposit->id]))
             ->call('create')->assertHasFormErrors(['location_id']);
         $this->assertDatabaseCount('assets', 0);

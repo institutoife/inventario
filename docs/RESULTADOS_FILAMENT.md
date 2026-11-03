@@ -1,3 +1,5 @@
+> Documento hist?rico. La migraci?n completa de la administraci?n a Filament se describe en [PANEL_FILAMENT.md](PANEL_FILAMENT.md).
+
 # Primera fase Filament — resultados del 22/10/2026
 
 ## Resultado y arquitectura

@@ -68,7 +68,7 @@ class FoundationRequest extends FormRequest
 
                 return;
             }
-            if ($this->filled('office_id')) {
+            if (in_array($key, ['people', 'assets']) && $this->filled('office_id')) {
                 $office = Office::find($this->office_id);
                 if (! $office || (int) $office->organizational_unit_id !== (int) $this->organizational_unit_id) {
                     $validator->errors()->add('office_id', 'La oficina debe pertenecer a la unidad seleccionada.');
