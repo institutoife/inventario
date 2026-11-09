@@ -21,6 +21,8 @@ class AdminResources
             'administrative-statuses' => [Models\AdministrativeStatus::class, 'Situaciones administrativas', 'catalogs.manage', $catalog],
             'positions' => [Models\Position::class, 'Cargos', 'catalogs.manage', $catalog],
             'ranks' => [Models\Rank::class, 'Grados / rangos', 'catalogs.manage', $catalog],
+            'asset-origins' => [Models\AssetOrigin::class, 'Procedencias', 'catalogs.manage', $catalog],
+            'incorporation-methods' => [Models\IncorporationMethod::class, 'Formas de incorporación', 'catalogs.manage', $catalog],
             'assets' => [Models\Asset::class, 'Inventario base', 'assets.view', ['code' => 'Código', 'description' => 'Descripción', 'registered_on' => 'Fecha de alta', 'budget_item_id' => 'Partida', 'asset_category_id' => 'Categoría', 'physical_status_id' => 'Estado físico', 'organizational_unit_id' => 'Unidad', 'office_id' => 'Oficina', 'location_id' => 'Ubicación', 'origin' => 'Procedencia', 'incorporation_method' => 'Forma de incorporación', 'value' => 'Valor', 'brand' => 'Marca', 'model' => 'Modelo', 'serial_number' => 'Serie', 'observations' => 'Observaciones']],
             'users' => [Models\User::class, 'Usuarios', 'users.manage', ['name' => 'Nombre', 'email' => 'Correo', 'password' => 'Contraseña', 'active' => 'Activo', 'roles' => 'Roles']],
         ];

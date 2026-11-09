@@ -5,6 +5,7 @@ namespace App\Domain\Assets;
 use App\Models\Asset;
 use App\Models\Location;
 use App\Models\Office;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator as ValidationValidator;
@@ -31,8 +32,18 @@ class AssetData
             'administrative_status_id' => ['prohibited'],
             'active' => ['prohibited'],
         ];
-        foreach (['origin', 'incorporation_method', 'brand', 'model', 'serial_number'] as $field) {
+        foreach (['brand', 'model', 'serial_number'] as $field) {
             $rules[$field] = ['nullable', 'string', 'max:255'];
+        }
+        foreach (['origin' => 'asset_origins', 'incorporation_method' => 'incorporation_methods'] as $field => $table) {
+            $rules[$field] = ['nullable', 'string', 'max:255', function ($attribute, $value, $fail) use ($asset, $field, $table) {
+                if ($asset && $value === $asset->getAttribute($field)) {
+                    return;
+                }
+                if (! DB::table($table)->where('name', $value)->where('active', true)->exists()) {
+                    $fail('Seleccione un valor activo del catálogo.');
+                }
+            }];
         }
         foreach ([
             'budget_item_id' => 'budget_items', 'asset_category_id' => 'asset_categories',

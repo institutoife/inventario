@@ -41,6 +41,8 @@ class FoundationRequest extends FormRequest
                 $rules['roles.*'] = 'required|integer|distinct|exists:roles,id';
             } elseif ($field === 'password') {
                 $rules[$field] = [$this->route('id') ? 'nullable' : 'required', 'string', 'min:12', 'max:255'];
+            } elseif ($field === 'name' && in_array($key, ['asset-origins', 'incorporation-methods'])) {
+                $rules[$field] = ['required', 'string', 'max:255', Rule::unique($table, $field)->ignore($this->route('id'))];
             } elseif ($field === 'email') {
                 $rules[$field] = ['required', 'email', 'max:255', Rule::unique($table, $field)->ignore($this->route('id'))];
             } elseif ($field === 'code') {

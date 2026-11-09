@@ -4,12 +4,15 @@ namespace App\Filament\Resources\Assets\Schemas;
 
 use App\Models\Asset;
 use App\Models\AssetCategory;
+use App\Models\AssetOrigin;
 use App\Models\BudgetItem;
+use App\Models\IncorporationMethod;
 use App\Models\Location;
 use App\Models\Office;
 use App\Models\OrganizationalUnit;
 use App\Models\PhysicalStatus;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
@@ -21,6 +24,16 @@ use Illuminate\Database\Eloquent\Builder;
 
 class AssetForm
 {
+    private static function catalogOptions(string $model, ?string $historical): array
+    {
+        $options = $model::where('active', true)->orderBy('name')->pluck('name', 'name')->all();
+        if (filled($historical) && ! array_key_exists($historical, $options)) {
+            $options[$historical] = $historical.' (valor histórico)';
+        }
+
+        return $options;
+    }
+
     public static function configure(Schema $schema): Schema
     {
         return $schema->columns(2)->components([
@@ -54,8 +67,10 @@ class AssetForm
                 AssetSelect::make('physical_status_id', 'Estado físico', PhysicalStatus::class),
             ]),
             Section::make('Información administrativa')->columns(3)->columnSpanFull()->schema([
-                TextInput::make('origin')->label('Procedencia')->maxLength(255),
-                TextInput::make('incorporation_method')->label('Forma de incorporación')->maxLength(255),
+                Select::make('origin')->label('Procedencia')->searchable()
+                    ->options(fn (?Asset $record) => self::catalogOptions(AssetOrigin::class, $record?->origin)),
+                Select::make('incorporation_method')->label('Forma de incorporación')->searchable()
+                    ->options(fn (?Asset $record) => self::catalogOptions(IncorporationMethod::class, $record?->incorporation_method)),
                 TextInput::make('value')->label('Valor registrado')->numeric()->minValue(0)->step('0.01')->rule('decimal:0,2'),
             ]),
             Section::make('Observaciones y justificación')->columnSpanFull()->schema([

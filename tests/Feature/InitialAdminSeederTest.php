@@ -12,6 +12,6 @@ class InitialAdminSeederTest extends FilamentTestCase
     {
         $this->seed(InitialAdminSeeder::class);
         $this->seed(InitialAdminSeeder::class);
-        $this->assertSame(1, User::where('email', 'admin@inventario.local')->count());
+        $this->assertSame(1, User::whereKeyNot($this->operator->id)->count());
     }
 }

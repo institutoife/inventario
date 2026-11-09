@@ -14,7 +14,7 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // Edita aquí las credenciales antes de ejecutar php artisan db:seed.
-        $name = 'Administrador'; 
+        $name = 'Administrador';
         $email = 'admin@acho.com';
         $password = 'CambiarEstaClave2026!';
 
